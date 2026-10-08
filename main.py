@@ -1,33 +1,19 @@
-from src_antigo.controllers.pedido_controller import PedidoController
-from src_antigo.database.connection import DatabaseConnection
-from src_antigo.models.desconto import DescontoNormal, DescontoPremium, DescontoVIP
-from src_antigo.models.pedido import Pedido
-from src_antigo.repositories.pedido_repository import PedidoRepository
-from src_antigo.services.pedido_service import PedidoService
+from src.app.adapters.controllers.pedido_controller import PedidoController
+from src.app.frameworks.database.memory_database import MemoryDatabase
+from src.app.adapters.repositories.memory_pedido_repository import MemoryPedidoRepository
+from src.app.use_cases.criar_pedido import CriarPedido
 
-if __name__=="__main__":
-    # Criação de objetos
-    database = DatabaseConnection()
-    repo = PedidoRepository(database)
-    service = PedidoService(repo)
-    controller = PedidoController(service)
-    
-    # Criando um pedido com desconto
-    
-    pedido1 = Pedido("Jonso", DescontoNormal())
-    pedido1.valor_original = 100.0 # Definindo o valor original do pedido
-    
-    pedido2 = Pedido("Vitin", DescontoVIP())
-    pedido2.valor_original = 100.0 # Definindo o valor original do pedido
-    
-    pedido3 = Pedido("Titila", DescontoPremium())
-    pedido3.valor_original = 100.0 # Definindo o valor original do pedido
-    
-        
-    # Salvamento dos pedidos no repositório
-    controller.adicionar_pedido(pedido1)
-    controller.adicionar_pedido(pedido2)
-    controller.adicionar_pedido(pedido3)
-    
-    # Processando os pedidos
-    controller.processar_pedidos()
+
+if __name__ == "__main__":
+    database = MemoryDatabase()
+    criar_pedido_gateway = MemoryPedidoRepository(database)
+    criar_pedido_use_case = CriarPedido(criar_pedido_gateway)
+    controller = PedidoController(criar_pedido_use_case)
+
+    controller.criar_pedido("vitin", 100, "normal")
+    controller.criar_pedido("atilario", 200, "vip")
+    controller.criar_pedido("pepivis", 300, "premium")
+
+    print("Pedidos registrados:")
+    for pedido in controller.listar_pedidos():
+        print(pedido)
