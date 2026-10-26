@@ -12,7 +12,9 @@ class CriarPedido:
         desconto_factory: DescontoFactory | None = None,
     ):
         self.pedido_gateway = pedido_gateway
-        self.desconto_factory = desconto_factory or DescontoFactory()
+        self.desconto_factory = (
+            desconto_factory if desconto_factory is not None else DescontoFactory()
+        )
 
     def executar(self, input_dto:CriarPedidoInputDTO) -> CriarPedidoOutputDTO:
         tipo_desconto = input_dto.tipo_desconto.lower().strip()
